@@ -5,6 +5,8 @@ import sys
 import datetime
 import tensorflow as tf
 from tensorflow.contrib import slim
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 
 import numpy as np
 
@@ -30,7 +32,7 @@ with open('dataset/loss_weights.txt', 'r') as f:
 
 FLAGS = tf.app.flags.FLAGS
 if __name__ == '__main__':
-    tf.app.flags.DEFINE_string("mode", "train", "train, pr, ex, or best")
+    tf.app.flags.DEFINE_string("mode", "pr", "train, pr, ex, or best")
 
     tf.app.flags.DEFINE_string("model_dir", "model", "Estimator model_dir")
     tf.app.flags.DEFINE_string("data_dir", "dataset/CampusLoopDataset", "Path to data")
@@ -44,7 +46,7 @@ if __name__ == '__main__':
         "is used to override hyperparameter settings when manually "
         "selecting hyperparameters.")
 
-    tf.app.flags.DEFINE_integer("batch_size", 12, "Size of mini-batch.")
+    tf.app.flags.DEFINE_integer("batch_size", 3, "Size of mini-batch.")
     tf.app.flags.DEFINE_string("netvlad_feat", None, "Binary base file for NetVLAD features. If you did this for dataset XX, "
             "the program will look for XX_db.bin and XX_q.bin")
     tf.app.flags.DEFINE_string("input_dir", "/mnt/f3be6b3c-80bb-492a-98bf-4d0d674a51d6/coco/calc_tfrecords/", "tfrecords dir")
@@ -424,6 +426,8 @@ def main(argv):
     del argv
     
     tf.logging.set_verbosity(tf.logging.ERROR)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+    sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
     if FLAGS.mode == 'train':
         hparams = _default_hparams()
