@@ -32,7 +32,8 @@ with open('dataset/loss_weights.txt', 'r') as f:
 
 FLAGS = tf.app.flags.FLAGS
 if __name__ == '__main__':
-    tf.app.flags.DEFINE_string("mode", "pr", "train, pr, ex, or best")
+    tf.app.flags.DEFINE_string("mode", "save_desc", "train, pr, ex, or best,or save_desc")
+    print('##############################', FLAGS.mode )
 
     tf.app.flags.DEFINE_string("model_dir", "model", "Estimator model_dir")
     tf.app.flags.DEFINE_string("data_dir", "dataset/CampusLoopDataset", "Path to data")
@@ -440,6 +441,13 @@ def main(argv):
             steps=FLAGS.steps,
             batch_size=FLAGS.batch_size,
        )
+
+    elif FLAGS.mode == 'save_desc':
+        import test_net_save_desc
+        print('### model save_desc')
+        test_net_save_desc.save_desc(FLAGS.model_dir, FLAGS.data_dir,
+                      FLAGS.n_include, FLAGS.title)
+
     elif FLAGS.mode == 'pr':
         import test_net
 
